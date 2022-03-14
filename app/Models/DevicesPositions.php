@@ -10,8 +10,7 @@ class DevicesPositions extends Model
     use HasFactory;
 
     protected $fillable = [
-        'device_id',
-        'lesson_id',
+        'deviceid',
         'speed',
         'longitude',
         'latitude',

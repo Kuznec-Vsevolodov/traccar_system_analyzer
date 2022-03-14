@@ -13,6 +13,8 @@ class TraccarController extends Controller
     public function devices($id){
         if(Lessons::where('device_id', $id)->where('grade', 0)->count() > 0){
             $lesson = Lessons::where('device_id', $id)->first();
+            
+            
             $url = 'http://5.101.119.123:8082/api/devices/'.$id;
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
@@ -22,36 +24,25 @@ class TraccarController extends Controller
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $curl_scraped_page = curl_exec($ch);
             curl_close($ch);
-            // echo($curl_scraped_page);
             $devices = json_decode($curl_scraped_page);
             $device = collect($devices);
-            $device_position_data = [];
+            // $device_position_data = [];
             if ($device['status'] == 'online') {
+                $device_last_position = DevicesPositions::where('deviceid', $id)->first();
+                $device_attributes = collect($device_last_position->attributes);
+
                 $device_position_data = collect($this->getPositionData($id));
                 $server_preferences = collect($this->getServerData());
-                $device_attributes = collect($device_position_data['attributes']);
                 $server_atributes = collect($server_preferences['attributes']);
-                $this->isHarchBrake($lesson->id, $id, $device_position_data['speed']);
-                $this->isRapidAcceleration($lesson->id, $id, $device_position_data['speed']);
-                DevicesPositions::create([
-                    'device_id' => $id,
-                    'lesson_id' => 1,
-                    'speed' => $device_position_data['speed'],
-                    'longitude' => $device_position_data['longitude'],
-                    'latitude' => $device_position_data['latitude'],
-                    'course' => $device_position_data['course'],
-                    'distance' => $device_attributes['distance']
-                ]);
-                if($device_position_data['speed'])
-                if ($device_position_data['speed'] > $server_atributes['speedLimit']){
+                if ($device_last_position->speed > $server_atributes['speedLimit']){
                     echo "Device is moving out of limit ";
-                    return $device_position_data;
+                    return $device_last_position;
                 }else{
                     echo "Moving is stable. No problems ";
-                    return $device_position_data;
+                    return $device_last_position;
                 }
             }else{
-                return "Check device connection. Now it's offline or disabled";
+                 return "Check device connection. Now it's offline or disabled";
             }    
         }else{
             echo 'НЕТ ТАКОГО';
@@ -93,28 +84,41 @@ class TraccarController extends Controller
 
     public function getMaxSpeedByLesson($lesson_id){
         $lesson = Lessons::where('id', $lesson_id)->first();
-        $max_speed = DevicesPositions::where('device_id', $lesson->device_id)
-                                     ->whereBetween('created_at', [$lesson->lesson_start, $lesson->lesson_end])
+        $max_speed = DevicesPositions::where('deviceid', $lesson->device_id)
+                                     ->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])
                                      ->orderBy('speed', 'DESC')->first();
         
-        $lesson->max_speed = round($max_speed->speed*1.831, 2);
+        $lesson->max_speed = round($max_speed->speed*1.85, 2);
         $lesson->save();
-        echo round($max_speed->speed*1.831, 2);
+        echo round($max_speed->speed*1.85, 2);
     }
 
     public function getHarchBrakes($lesson_id){
         $lesson = Lessons::where('id', $lesson_id)->first();
-        $positions = DevicesPositions::where('device_id', $lesson->device_id)->whereBetween('created_at', [$lesson->lesson_start, $lesson->lesson_end])->get();
+        $positions = DevicesPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get();
         $previous_item = null;
         $brakes_counter = 0;
+        $harch_brakes_time_score = 3;
         foreach($positions as $item) {
             if($previous_item == null){
                 $previous_item = $item;
             }else{
-                $last_speed_data = round($previous_item->speed*1.831, 2);
-                $speeds_differnce = $last_speed_data - round($item->speed*1.831,2); 
-                if ($last_speed_data/100*70 <= $speeds_differnce){
-                    $brakes_counter++;
+                $last_speed_data = round($previous_item->speed*1.852, 2);
+                $speeds_differnce = $last_speed_data - round($item->speed*1.852,2); 
+                if ($speeds_differnce > 9){
+                    // if($harch_brakes_time_score == 4){
+                        if(round($item->speed*1.852,2) > 15){
+                            $brakes_counter++;
+                        }
+                        
+                    //     $harch_brakes_time_score--;
+                    // }else{
+                    //     $harch_brakes_time_score--;
+                    //     if($harch_brakes_time_score == 0){
+                    //         $harch_brakes_time_score = 4;
+                    //     }
+                    // }
+                    
                 }
                 $previous_item = $item;
             }
@@ -126,18 +130,23 @@ class TraccarController extends Controller
 
     public function getRapidAccelerations($lesson_id){
         $lesson = Lessons::where('id', $lesson_id)->first();
-        $positions = DevicesPositions::where('device_id', $lesson->device_id)->whereBetween('created_at', [$lesson->lesson_start, $lesson->lesson_end])->get();
+        $positions = DevicesPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get();
         $previous_item = null;
         $accelerations_counter = 0;
+        $rapid_acceleration_time_score = 3;
         foreach($positions as $item) {
             if($previous_item == null){
                 $previous_item = $item;
             }else{
-                $last_speed_data = round($previous_item->speed*1.831, 2);
+                $last_speed_data = round($previous_item->speed*1.852, 2);
                 if ($item->speed > $last_speed_data){
-                    $speeds_differnce = round($item->speed*1.831, 2); - $last_speed_data; 
-                    if($speeds_differnce >= 10){
-                        $accelerations_counter++;
+                    $speeds_differnce = round($item->speed*1.852, 2) - $last_speed_data; 
+                    if($speeds_differnce >= 9){
+                            echo $last_speed_data.' ДО ';
+                            echo round($item->speed*1.852, 2).' ПОСЛЕ ';
+                            echo $speeds_differnce.' ';
+                            
+                            $accelerations_counter++;
                     }
                 }
                 $previous_item = $item;
@@ -150,10 +159,10 @@ class TraccarController extends Controller
 
     public function getWideTurns($lesson_id){
         $lesson = Lessons::where('id', $lesson_id)->first();
-        $positions = DevicesPositions::where('device_id', $lesson->device_id)->whereBetween('created_at', [$lesson->lesson_start, $lesson->lesson_end])->get();
+        $positions = DevicesPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get();
         $previous_item = null;
         $wide_turns_counter = 0;
-        $turns = [];
+        $turns_counter = 0;
         $trend = '';
         foreach($positions as $item) {
             if($previous_item == null){
@@ -161,35 +170,35 @@ class TraccarController extends Controller
             }else{
                 
                 if($previous_item->course >= $item->course){
-                    $courses_difference = $previous_item->course - $item->course;
-                    if($courses_difference >= 10){
+                    if($previous_item->course - $item->course == 1){
                         if($trend == 'down' || $trend == ''){
-                            $turns = [];
+                            $turns_counter = 0;
                             $trend == 'up';
-                            if(count($turns) >= 9){
+                            if($turns_counter >= 5){
                                 $wide_turns_counter++;
                             }
-                            $turns[] = $item->course;
+                            echo 'ДО '.$previous_item->course;
+                            echo ' ПОСЛЕ '.$item->course;
+                            $turns_counter++;
                         }else if($trend == 'up'){
-                            $turns[] = $item->course;
+                            $turns_counter++;
                         }
-                    }
-                    var_dump($turns);
+                    }    
                 }else{
-                    $courses_difference = $item->course - $previous_item->course;
-                    if($courses_difference >= 10){
+                    if($item->course - $previous_item->course == 1){
                         if($trend == 'up' || $trend == ''){
                             $trend = 'down';
-                            $turns = [];
-                            if(count($turns) >= 9){
+                            $turns_counter = 0;
+                            if($turns_counter >= 5){
                                 $wide_turns_counter++;
                             }
-                            $turns[] = $item->course;
+                            echo 'ДО '.$previous_item->course;
+                            echo ' ПОСЛЕ '.$item->course;
+                            $turns_counter++;
                         }else if($trend == 'down'){
-                            $turns[] = $item->course;
+                            $turns_counter++;
                         }
                     }
-                    var_dump($turns);
                 }
 
                 $previous_item = $item;
@@ -202,7 +211,14 @@ class TraccarController extends Controller
 
     public function getFullDistance($lesson_id){
         $lesson = Lessons::where('id', $lesson_id)->first();
-        return DevicesPositions::where('device_id', $lesson->device_id)->whereBetween('created_at', [$lesson->lesson_start, $lesson->lesson_end])->sum('distance');
+        $attributes = DevicesPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->pluck('attributes');
+        $total_distance = 0;
+        foreach($attributes as $item){
+            $item = collect(json_decode($item));
+            $total_distance += $item['distance'];
+        }
+        
+        return round($total_distance, 2);
     }
 
 }   
