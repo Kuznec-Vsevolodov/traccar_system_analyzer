@@ -161,18 +161,7 @@ class TraccarController extends Controller
         $wide_turns_counter = 0;
 
         foreach($positions as $item) {
-<<<<<<< HEAD
-            if($previous_item == null){
-                $previous_item = $item;
-            }else{
-                if ($previous_item->course > $item->course){
-                    if ($previous_item->course - $item->course >= 60){
-                        $wide_turns_counter++;
-                    }
-                }else{
-                    if ($item->course-$previous_item->course >= 60){
-                        $wide_turns_counter++;
-=======
+
             if($item->speed*1.852 > 10){
                 if($previous_item == null){
                     $previous_item = $item;
@@ -185,7 +174,6 @@ class TraccarController extends Controller
                         if ($item->course-$previous_item->course >= 45){
                             $wide_turns_counter++;
                         }
->>>>>>> 22f3bd3b9c8669b40b626e8ccff0f2f7dc6f646f
                     }
                     
                 }
