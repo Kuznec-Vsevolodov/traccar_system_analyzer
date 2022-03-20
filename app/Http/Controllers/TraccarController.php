@@ -106,18 +106,18 @@ class TraccarController extends Controller
                 $last_speed_data = round($previous_item->speed*1.852, 2);
                 $speeds_differnce = $last_speed_data - round($item->speed*1.852,2); 
                 if ($speeds_differnce > 9){
-                    // if($harch_brakes_time_score == 4){
+                    if($harch_brakes_time_score == 4){
                         if(round($item->speed*1.852,2) > 15){
                             $brakes_counter++;
                         }
                         
-                    //     $harch_brakes_time_score--;
-                    // }else{
-                    //     $harch_brakes_time_score--;
-                    //     if($harch_brakes_time_score == 0){
-                    //         $harch_brakes_time_score = 4;
-                    //     }
-                    // }
+                        $harch_brakes_time_score--;
+                    }else{
+                        $harch_brakes_time_score--;
+                        if($harch_brakes_time_score == 0){
+                            $harch_brakes_time_score = 4;
+                        }
+                    }
                     
                 }
                 $previous_item = $item;
@@ -142,9 +142,6 @@ class TraccarController extends Controller
                 if ($item->speed > $last_speed_data){
                     $speeds_differnce = round($item->speed*1.852, 2) - $last_speed_data; 
                     if($speeds_differnce >= 9){
-                            echo $last_speed_data.' ДО ';
-                            echo round($item->speed*1.852, 2).' ПОСЛЕ ';
-                            echo $speeds_differnce.' ';
                             
                             $accelerations_counter++;
                     }
@@ -162,9 +159,9 @@ class TraccarController extends Controller
         $positions = DevicesPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get();
         $previous_item = null;
         $wide_turns_counter = 0;
-        $turns_counter = 0;
-        $trend = '';
+
         foreach($positions as $item) {
+<<<<<<< HEAD
             if($previous_item == null){
                 $previous_item = $item;
             }else{
@@ -175,13 +172,27 @@ class TraccarController extends Controller
                 }else{
                     if ($item->course-$previous_item->course >= 60){
                         $wide_turns_counter++;
+=======
+            if($item->speed*1.852 > 10){
+                if($previous_item == null){
+                    $previous_item = $item;
+                }else{
+                    if ($previous_item->course > $item->course){
+                        if ($previous_item->course - $item->course >= 45){
+                            $wide_turns_counter++;
+                        }
+                    }else{
+                        if ($item->course-$previous_item->course >= 45){
+                            $wide_turns_counter++;
+                        }
+>>>>>>> 22f3bd3b9c8669b40b626e8ccff0f2f7dc6f646f
                     }
                     
                 }
-
-                $previous_item = $item;
             }
+            $previous_item = $item;
         }
+
         echo $wide_turns_counter;
         $lesson->wide_turn_count = $wide_turns_counter;
         $lesson->save();
@@ -197,6 +208,11 @@ class TraccarController extends Controller
         }
         
         return round($total_distance, 2);
+    }
+
+    public function getLessonPositions($lesson_id){
+        $lesson = Lessons::where('id', $lesson_id)->first();
+        return DevicesPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get();
     }
 
 }   

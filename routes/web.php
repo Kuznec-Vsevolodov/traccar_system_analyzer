@@ -20,10 +20,19 @@ Route::get('/get-accelerations/{lesson_id}', 'TraccarController@getRapidAccelera
 Route::get('/get-brakes/{lesson_id}', 'TraccarController@getHarchBrakes');
 Route::get('/get-full-distanse/{lesson_id}', 'TraccarController@getFullDistance');
 Route::get('/get-wide-turns/{lesson_id}', 'TraccarController@getWideTurns');
+Route::get('/notes/{id}', 'CommentsController@getAllCommentsByLesson');
+Route::get('/get-requests', 'RequestsController@index');
+Route::get('/lesson_positions/{lesson_id}', 'TraccarController@getLessonPositions');
+
 Route::post('/create-lesson', 'LessonController@createLesson');
 Route::post('/add-instructor', 'InstructorsController@addInstructor');
 Route::post('/add-student', 'StudentsController@addStudent');
+<<<<<<< HEAD
 Route::get('/report/download', 'PdfReportController@download');
 Route::get('/report', function () {
     return view('pdf.report');
 });
+=======
+Route::post('/add-comment', 'CommentsController@addComment');
+
+>>>>>>> 22f3bd3b9c8669b40b626e8ccff0f2f7dc6f646f
