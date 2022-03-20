@@ -23,4 +23,7 @@ Route::get('/get-wide-turns/{lesson_id}', 'TraccarController@getWideTurns');
 Route::post('/create-lesson', 'LessonController@createLesson');
 Route::post('/add-instructor', 'InstructorsController@addInstructor');
 Route::post('/add-student', 'StudentsController@addStudent');
-
+Route::get('/report/download', 'PdfReportController@download');
+Route::get('/report', function () {
+    return view('pdf.report');
+});
