@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Drivers;
-use App\Models\DevicesPositions;
+use App\Models\TcPositions;
 use App\Models\Ratings;
 use App\Models\Lessons;
 
@@ -17,7 +17,7 @@ class RatingController extends Controller
 
         $lesson = Lessons::where('lesson_driver', $instructor_id)->where('grade', 0)->first();
 
-        $current_position = DevicesPositions::where('deviceid', $lesson->device_id)->orderBy('devicetime', 'DESC')->first();
+        $current_position = TcPositions::where('deviceid', $lesson->device_id)->orderBy('devicetime', 'DESC')->first();
 
         Ratings::create([
             'author_id' => $instructor_id[0],

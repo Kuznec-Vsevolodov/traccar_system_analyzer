@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Drivers;
-use App\Models\DevicesPositions;
+use App\Models\TcPositions;
 use App\Models\Comments;
 use App\Models\Lessons;
 
@@ -13,7 +13,6 @@ class CommentsController extends Controller
 {
 
     public function addComment(Request $request){
-        $devicesPositions = new DevicePositions;
 
         $devicesPositions->setConnection('mysql2');
 
@@ -21,7 +20,7 @@ class CommentsController extends Controller
 
         $lesson = Lessons::where('lesson_driver', $instructor_id)->where('grade', 0)->first();
 
-        $current_position = $devicesPositions->where('deviceid', $lesson->device_id)->orderBy('devicetime', 'DESC')->first();
+        $current_position = TcPositions::where('deviceid', $lesson->device_id)->orderBy('devicetime', 'DESC')->first();
 
         Comments::create([
             'author_id' => $instructor_id[0],
