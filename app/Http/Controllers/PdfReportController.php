@@ -4,23 +4,32 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Lessons;
+use App\Models\Students;
+use App\Models\Drivers;
+use App\Models\Brakes;
+use App\Models\Accelerations;
+use App\Models\WideTurns;
 
 use PDF;
 
 class PdfReportController extends Controller
 {
-    public function download()
+    public function download($id)
     {
-        $products = [
-            ['title' => 'Product 1', 'price' => 10.99, 'quantity' => 1, 'totals' => 10.99],
-            ['title' => 'Product 2', 'price' => 14.99, 'quantity' => 2, 'totals' => 29.98],
-            ['title' => 'Product 3', 'price' => 500.00, 'quantity' => 1, 'totals' => 500.00],
-            ['title' => 'Product 4', 'price' => 6.99, 'quantity' => 3, 'totals' => 20.97],
-        ];
+        $lesson = Lessons::where('id', $id)->first();
 
-        $total = collect($products)->sum('totals');
+        $brakes = Brakes::where('lesson_id', $lesson->id)->get();
 
-        $pdf = PDF::loadView('pdf.report', compact('products', 'total'));
+        $accelerations = Accelerations::where('lesson_id', $lesson->id)->get();
+
+        $turns = WideTurns::where('lesson_id', $lesson->id)->get();
+
+        $instructor = Drivers::where('id', $lesson->lesson_driver)->first();
+        $student = Students::where('id', $lesson->lesson_student)->first();
+
+
+        $pdf = PDF::loadView('pdf.report', compact('lesson', 'student', 'instructor', 'turns', 'brakes', 'accelerations'));
 
         return $pdf->download('report.pdf');
     }

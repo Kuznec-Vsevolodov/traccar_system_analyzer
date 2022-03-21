@@ -9,6 +9,8 @@ class Lessons extends Model
 {
     use HasFactory;
 
+    protected $connection = 'mysql';
+
     protected $fillable = [
         'device_id',
         'lesson_start',

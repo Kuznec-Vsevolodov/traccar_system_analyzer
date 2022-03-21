@@ -13,11 +13,15 @@ class CommentsController extends Controller
 {
 
     public function addComment(Request $request){
+        $devicesPositions = new DevicePositions;
+
+        $devicesPositions->setConnection('mysql2');
+
         $instructor_id = Drivers::where('last_name', $request->input('last_name'))->where('first_name', $request->input('first_name'))->pluck('id');
 
         $lesson = Lessons::where('lesson_driver', $instructor_id)->where('grade', 0)->first();
 
-        $current_position = DevicesPositions::where('deviceid', $lesson->device_id)->orderBy('devicetime', 'DESC')->first();
+        $current_position = $devicesPositions->where('deviceid', $lesson->device_id)->orderBy('devicetime', 'DESC')->first();
 
         Comments::create([
             'author_id' => $instructor_id[0],

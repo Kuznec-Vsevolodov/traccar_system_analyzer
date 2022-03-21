@@ -9,6 +9,8 @@ class DevicesPositions extends Model
 {
     use HasFactory;
 
+    protected $connection = 'mysql2';
+
     protected $fillable = [
         'deviceid',
         'speed',

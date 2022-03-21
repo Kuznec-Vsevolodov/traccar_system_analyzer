@@ -5,14 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Drivers extends Model
+class Ratings extends Model
 {
     use HasFactory;
 
     protected $connection = 'mysql';
 
     protected $fillable = [
-        'first_name',
-        'last_name',
+        'author_id',
+        'lesson_id',
+        'rating_score',
+        'category_name'
     ];
 }

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Lessons;
 use App\Models\DevicesPositions;
+use App\Models\Brakes;
+use App\Models\Accelerations;
+use App\Models\WideTurns;
 
 class TraccarController extends Controller
 {
@@ -13,7 +16,6 @@ class TraccarController extends Controller
     public function devices($id){
         if(Lessons::where('device_id', $id)->where('grade', 0)->count() > 0){
             $lesson = Lessons::where('device_id', $id)->first();
-            
             
             $url = 'http://5.101.119.123:8082/api/devices/'.$id;
             $ch = curl_init();
@@ -26,21 +28,13 @@ class TraccarController extends Controller
             curl_close($ch);
             $devices = json_decode($curl_scraped_page);
             $device = collect($devices);
-            // $device_position_data = [];
+            $device_position_data = [];
             if ($device['status'] == 'online') {
                 $device_last_position = DevicesPositions::where('deviceid', $id)->first();
                 $device_attributes = collect($device_last_position->attributes);
 
                 $device_position_data = collect($this->getPositionData($id));
                 $server_preferences = collect($this->getServerData());
-                $server_atributes = collect($server_preferences['attributes']);
-                if ($device_last_position->speed > $server_atributes['speedLimit']){
-                    echo "Device is moving out of limit ";
-                    return $device_last_position;
-                }else{
-                    echo "Moving is stable. No problems ";
-                    return $device_last_position;
-                }
             }else{
                  return "Check device connection. Now it's offline or disabled";
             }    
@@ -109,6 +103,12 @@ class TraccarController extends Controller
                     if($harch_brakes_time_score == 4){
                         if(round($item->speed*1.852,2) > 15){
                             $brakes_counter++;
+                            Brakes::create([
+                                'lesson_id' => $lesson->id,
+                                'longitude' => $item->longitude,
+                                'latitude' => $item->latitude
+                            ]);
+
                         }
                         
                         $harch_brakes_time_score--;
@@ -142,7 +142,11 @@ class TraccarController extends Controller
                 if ($item->speed > $last_speed_data){
                     $speeds_differnce = round($item->speed*1.852, 2) - $last_speed_data; 
                     if($speeds_differnce >= 9){
-                            
+                            Accelerations::create([
+                                'lesson_id' => $lesson->id,
+                                'longitude' => $item->longitude,
+                                'latitude' => $item->latitude
+                            ]);
                             $accelerations_counter++;
                     }
                 }
@@ -167,11 +171,21 @@ class TraccarController extends Controller
                     $previous_item = $item;
                 }else{
                     if ($previous_item->course > $item->course){
-                        if ($previous_item->course - $item->course >= 45){
+                        if ($previous_item->course - $item->course >= 60){
+                            WideTurns::create([
+                                'lesson_id' => $lesson->id,
+                                'longitude' => $item->longitude,
+                                'latitude' => $item->latitude
+                            ]);
                             $wide_turns_counter++;
                         }
                     }else{
-                        if ($item->course-$previous_item->course >= 45){
+                        if ($item->course-$previous_item->course >= 60){
+                            WideTurns::create([
+                                'lesson_id' => $lesson->id,
+                                'longitude' => $item->longitude,
+                                'latitude' => $item->latitude
+                            ]);
                             $wide_turns_counter++;
                         }
                     }

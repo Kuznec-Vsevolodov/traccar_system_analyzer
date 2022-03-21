@@ -28,10 +28,10 @@ Route::post('/create-lesson', 'LessonController@createLesson');
 Route::post('/add-instructor', 'InstructorsController@addInstructor');
 Route::post('/add-student', 'StudentsController@addStudent');
 
-Route::get('/report/download', 'PdfReportController@download');
+Route::get('/report/download/{id}', 'PdfReportController@download');
 Route::get('/report', function () {
     return view('pdf.report');
 });
 
 Route::post('/add-comment', 'CommentsController@addComment');
-
+Route::post('/add-raiting', 'RatingController@addRaiting');

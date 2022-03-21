@@ -9,6 +9,8 @@ class Comments extends Model
 {
     use HasFactory;
 
+    protected $connection = 'mysql';
+
     protected $fillable = [
         'author_id',
         'lesson_id',

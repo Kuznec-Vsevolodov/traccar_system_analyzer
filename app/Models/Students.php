@@ -9,6 +9,8 @@ class Students extends Model
 {
     use HasFactory;
 
+    protected $connection = 'mysql';
+
     protected $fillable = [
         'first_name',
         'last_name',
