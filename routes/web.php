@@ -23,6 +23,7 @@ Route::get('/get-wide-turns/{lesson_id}', 'TraccarController@getWideTurns');
 Route::get('/notes/{id}', 'CommentsController@getAllCommentsByLesson');
 Route::get('/get-requests', 'RequestsController@index');
 Route::get('/lesson_positions/{lesson_id}', 'TraccarController@getLessonPositions');
+Route::get('/lesson_current_position/{lesson_id}', 'TraccarController@getCurrentPositionByLesson');
 
 Route::post('/create-lesson', 'LessonController@createLesson');
 Route::post('/add-instructor', 'InstructorsController@addInstructor');
