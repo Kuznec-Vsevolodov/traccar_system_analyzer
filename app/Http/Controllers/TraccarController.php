@@ -39,8 +39,21 @@ class TraccarController extends Controller
                  return "Check device connection. Now it's offline or disabled";
             }    
         }else{
-            echo 'НЕТ ТАКОГО';
+            echo 'There is not this lesson';
         }
+    }
+
+    public function getCurrentPositionByLesson($id){
+        $lesson = Lesson::where('id', $id)->first();
+
+        $device_last_position = TcPositions::where('deviceid', $id)->first();
+        $device_attributes = collect($device_last_position->attributes);
+
+        $brakes = $this->getHarchBrakes($id);
+        $accelerations = $this->getRapidAccelerations($id);
+        $turns = $this->getWideTurns($id);
+
+        return [$device_last_position, $brakes, $accelerations, $turns];
     }
 
     public function getServerData(){
@@ -103,12 +116,13 @@ class TraccarController extends Controller
                     if($harch_brakes_time_score == 4){
                         if(round($item->speed*1.852,2) > 15){
                             $brakes_counter++;
-                            Brakes::create([
-                                'lesson_id' => $lesson->id,
-                                'longitude' => $item->longitude,
-                                'latitude' => $item->latitude
-                            ]);
-
+                            if (Brakes::where('lesson_id', $id)->where('longitude', $item->longitude)->where('latitude', $item->latitude)->count() == 0){
+                                Brakes::create([
+                                    'lesson_id' => $lesson->id,
+                                    'longitude' => $item->longitude,
+                                    'latitude' => $item->latitude
+                                ]);    
+                            }
                         }
                         
                         $harch_brakes_time_score--;
@@ -126,6 +140,8 @@ class TraccarController extends Controller
         echo $brakes_counter;
         $lesson->harsh_braking_count = $brakes_counter;
         $lesson->save();
+
+        return Brakes::where('lesson_id', $lesson_id)->get();
     }
 
     public function getRapidAccelerations($lesson_id){
@@ -142,12 +158,14 @@ class TraccarController extends Controller
                 if ($item->speed > $last_speed_data){
                     $speeds_differnce = round($item->speed*1.852, 2) - $last_speed_data; 
                     if($speeds_differnce >= 9){
+                        if (Accelerations::where('lesson_id', $id)->where('longitude', $item->longitude)->where('latitude', $item->latitude)->count() == 0){
                             Accelerations::create([
                                 'lesson_id' => $lesson->id,
                                 'longitude' => $item->longitude,
                                 'latitude' => $item->latitude
-                            ]);
-                            $accelerations_counter++;
+                            ]);    
+                        }
+                        $accelerations_counter++;
                     }
                 }
                 $previous_item = $item;
@@ -156,6 +174,8 @@ class TraccarController extends Controller
         echo $accelerations_counter;
         $lesson->rapid_acceleration_count = $accelerations_counter;
         $lesson->save();
+
+        return Accelerations::where('lesson_id', $lesson_id)->get();
     }
 
     public function getWideTurns($lesson_id){
@@ -172,20 +192,24 @@ class TraccarController extends Controller
                 }else{
                     if ($previous_item->course > $item->course){
                         if ($previous_item->course - $item->course >= 60){
-                            WideTurns::create([
-                                'lesson_id' => $lesson->id,
-                                'longitude' => $item->longitude,
-                                'latitude' => $item->latitude
-                            ]);
+                            if (WideTurns::where('lesson_id', $id)->where('longitude', $item->longitude)->where('latitude', $item->latitude)->count() == 0){
+                                WideTurns::create([
+                                    'lesson_id' => $lesson->id,
+                                    'longitude' => $item->longitude,
+                                    'latitude' => $item->latitude
+                                ]);    
+                            }
                             $wide_turns_counter++;
                         }
                     }else{
                         if ($item->course-$previous_item->course >= 60){
-                            WideTurns::create([
-                                'lesson_id' => $lesson->id,
-                                'longitude' => $item->longitude,
-                                'latitude' => $item->latitude
-                            ]);
+                            if (WideTurns::where('lesson_id', $id)->where('longitude', $item->longitude)->where('latitude', $item->latitude)->count() == 0){
+                                WideTurns::create([
+                                    'lesson_id' => $lesson->id,
+                                    'longitude' => $item->longitude,
+                                    'latitude' => $item->latitude
+                                ]);    
+                            }
                             $wide_turns_counter++;
                         }
                     }
@@ -198,6 +222,8 @@ class TraccarController extends Controller
         echo $wide_turns_counter;
         $lesson->wide_turn_count = $wide_turns_counter;
         $lesson->save();
+
+        return WideTurns::where('lesson_id', $lesson_id)->get();
     }
 
     public function getFullDistance($lesson_id){
