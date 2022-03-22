@@ -44,7 +44,7 @@ class TraccarController extends Controller
     }
 
     public function getCurrentPositionByLesson($lesson_id){
-        $lesson = Lesson::where('id', $id)->first();
+        $lesson = Lessons::where('id', $id)->first();
 
         $device_last_position = TcPositions::where('deviceid', $id)->first();
         $device_attributes = collect($device_last_position->attributes);
