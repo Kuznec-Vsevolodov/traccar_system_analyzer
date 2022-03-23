@@ -9,7 +9,7 @@ use App\Models\TcPositions;
 use App\Models\Brakes;
 use App\Models\Accelerations;
 use App\Models\WideTurns;
-use app\Models\TcDevices;
+use App\Models\TcDevices;
 
 class TraccarController extends Controller
 {
