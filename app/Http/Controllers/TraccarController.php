@@ -91,7 +91,7 @@ class TraccarController extends Controller
     }
 
     public function getMaxSpeedByLesson($lesson_id){
-        $lesson = Lessons::where('id', $lesson_id)->get();
+        $lesson = Lessons::where('id', $lesson_id)->first();
         $max_speed = TcPositions::where('deviceid', $lesson->device_id)
                                      ->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])
                                      ->orderBy('speed', 'DESC')->first();
