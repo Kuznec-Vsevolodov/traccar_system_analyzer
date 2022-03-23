@@ -19,13 +19,13 @@ class RatingController extends Controller
 
         $current_position = TcPositions::where('deviceid', $lesson->device_id)->orderBy('devicetime', 'DESC')->first();
 
-        Ratings::create([
+        $rating = Ratings::create([
             'author_id' => $instructor_id[0],
             'lesson_id' => $lesson->id,
             'rating_score' => $request->input('rating_score'),
             'category_name' => $request->input('category_name'),
         ]);
-        return "Created";
+        return $rating;
     }
 
     public function getAllRatingsByLesson($id){

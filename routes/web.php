@@ -25,6 +25,9 @@ Route::get('/get-requests', 'RequestsController@index');
 Route::get('/lesson_positions/{lesson_id}', 'TraccarController@getLessonPositions');
 Route::get('/lesson_current_position/{lesson_id}', 'TraccarController@getCurrentPositionByLesson');
 Route::get('/get-all-devices', 'TraccarController@getAllDevices');
+Route::get('/get-students-list', 'StudentsController@getStudentsList');
+Route::get('/get-instructors-list', 'InstructorsController@getInstructorList');
+
 
 Route::post('/create-lesson', 'LessonController@createLesson');
 Route::post('/add-instructor', 'InstructorsController@addInstructor');

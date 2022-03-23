@@ -22,14 +22,14 @@ class CommentsController extends Controller
 
         $current_position = TcPositions::where('deviceid', $lesson->device_id)->orderBy('devicetime', 'DESC')->first();
 
-        Comments::create([
+        $comment = Comments::create([
             'author_id' => $instructor_id[0],
             'lesson_id' => $lesson->id,
             'longitude' => $current_position->longitude,
             'latitude' => $current_position->latitude,
             'text' => $request->input('text')
         ]);
-        return "Created";
+        return $comment;
     }
 
     public function getAllCommentsByLesson($id){

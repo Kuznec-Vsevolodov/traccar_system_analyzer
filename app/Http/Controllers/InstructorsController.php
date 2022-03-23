@@ -13,11 +13,11 @@ class InstructorsController extends Controller
         if(Drivers::where('first_name', $request->input('first_name'))->where('last_name', $request->input('last_name'))->count() > 0){
             return 'Already exists';
         }else{
-            Drivers::create([
+            $instructor = Drivers::create([
                 'last_name' => $request->input('last_name'),
                 'first_name' => $request->input('first_name'),
             ]);
-            return "Created";
+            return $instructor;
         }
     }
 

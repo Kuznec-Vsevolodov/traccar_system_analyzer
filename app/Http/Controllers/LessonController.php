@@ -31,6 +31,6 @@ class LessonController extends Controller
     public function getLessonByTime($request){ 
         $current_time = Carbon::now();
 
-        $lesson = Lessons::where('lesson_start' < $current_time)->where('lesson_end' > $current_time)->where('driver_id', $request->input('driver_id'))->get();
+        $lesson = Lessons::where('lesson_start' < $current_time)->where('lesson_end' > $current_time)->where('instructor_id', $request->input('instructor_id'))->get();
     }
 }

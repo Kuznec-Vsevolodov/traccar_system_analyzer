@@ -13,11 +13,11 @@ class StudentsController extends Controller
         if(Students::where('first_name', $request->input('first_name'))->where('last_name', $request->input('last_name'))->count() > 0){
             return 'Already exists';
         }else{
-            Students::create([
+            $student = Students::create([
                 'last_name' => $request->input('last_name'),
                 'first_name' => $request->input('first_name'),
             ]);
-            return "Created";
+            return $student;
         }
     }
 
