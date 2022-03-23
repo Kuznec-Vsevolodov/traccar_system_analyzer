@@ -24,6 +24,7 @@ Route::get('/notes/{id}', 'CommentsController@getAllCommentsByLesson');
 Route::get('/get-requests', 'RequestsController@index');
 Route::get('/lesson_positions/{lesson_id}', 'TraccarController@getLessonPositions');
 Route::get('/lesson_current_position/{lesson_id}', 'TraccarController@getCurrentPositionByLesson');
+Route::get('/get-all-devices', 'TraccarController@getAllDevices');
 
 Route::post('/create-lesson', 'LessonController@createLesson');
 Route::post('/add-instructor', 'InstructorsController@addInstructor');
@@ -36,3 +37,4 @@ Route::get('/report', function () {
 
 Route::post('/add-comment', 'CommentsController@addComment');
 Route::post('/add-raiting', 'RatingController@addRaiting');
+Route::post('/get-lesson-by-time-instructor', 'LessonController@getLessonByTime');

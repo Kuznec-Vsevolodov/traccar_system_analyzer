@@ -9,6 +9,7 @@ use App\Models\TcPositions;
 use App\Models\Brakes;
 use App\Models\Accelerations;
 use App\Models\WideTurns;
+use app\Models\TcDevices;
 
 class TraccarController extends Controller
 {
@@ -243,4 +244,7 @@ class TraccarController extends Controller
         return TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get();
     }
 
+    public function getAllDevices(){
+        return TcDevices::all();
+    }
 }   
