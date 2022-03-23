@@ -15,7 +15,7 @@ class RatingController extends Controller
     public function addRaiting(Request $request){
         $instructor_id = Drivers::where('last_name', $request->input('last_name'))->where('first_name', $request->input('first_name'))->pluck('id');
 
-        $lesson = Lessons::where('lesson_driver', $instructor_id)->where('grade', 0)->first();
+        $lesson = Lessons::where('id', $request->input('lesson_id'))->first();
 
         $current_position = TcPositions::where('deviceid', $lesson->device_id)->orderBy('devicetime', 'DESC')->first();
 

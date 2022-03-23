@@ -16,6 +16,7 @@ class VerifyCsrfToken extends Middleware
         '/add-instructor',
         '/add-student',
         '/add-comment',
-        '/add-raiting'
+        '/add-raiting',
+        '/get-lesson-by-time-instructor'
     ];
 }
