@@ -32,7 +32,7 @@ class LessonController extends Controller
         $current_time = Carbon::now();
         return Lessons::where('lesson_start' < $current_time)
                 ->where('lesson_end' > $current_time)
-                ->where('instructor_id', $request->input('instructor_id'))
+                ->where('lesson_driver', $request->input('instructor_id'))
                 ->first();
     
     }
