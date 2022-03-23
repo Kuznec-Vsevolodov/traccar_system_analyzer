@@ -33,7 +33,7 @@ class LessonController extends Controller
         return Lessons::where('lesson_start' < $current_time)
                 ->where('lesson_end' > $current_time)
                 ->where('instructor_id', $request->input('instructor_id'))
-                ->get();
+                ->first();
     
     }
 }
