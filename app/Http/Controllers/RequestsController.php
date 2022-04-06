@@ -14,7 +14,7 @@ class RequestsController extends Controller
     public function index($lesson_id){
 
         $lesson = Lessons::where('id', $lesson_id)->first();
-        $positions = TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->pluck('longtitude', 'latitude');
+        $positions = TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->pluck('longitude', 'latitude');
         echo $positions;
         return view('requests');
     }
