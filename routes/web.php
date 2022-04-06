@@ -21,7 +21,7 @@ Route::get('/get-brakes/{lesson_id}', 'TraccarController@getHarchBrakes');
 Route::get('/get-full-distanse/{lesson_id}', 'TraccarController@getFullDistance');
 Route::get('/get-wide-turns/{lesson_id}', 'TraccarController@getWideTurns');
 Route::get('/notes/{id}', 'CommentsController@getAllCommentsByLesson');
-Route::get('/get-requests', 'RequestsController@index');
+Route::get('/get-requests/{lesson_id}', 'RequestsController@index');
 Route::get('/lesson_positions/{lesson_id}', 'TraccarController@getLessonPositions');
 Route::get('/lesson_current_position/{lesson_id}', 'TraccarController@getCurrentPositionByLesson');
 Route::get('/get-all-devices', 'TraccarController@getAllDevices');

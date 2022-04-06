@@ -21,58 +21,6 @@
         </style>
     </head>
     <body class="antialiased">
-    <form id="contactform" method="POST" class="validateform">
-        {{ csrf_field() }}
-    
-        <div id="sendmessage">
-            Ваше сообщение отправлено!
-        </div>
-        <div id="senderror">
-            При отправке сообщения произошла ошибка. Продублируйте его, пожалуйста, на почту администратора <span>{{ env('MAIL_ADMIN_EMAIL') }}</span>
-        </div>
-        <div class="row">
-            <div class="col-lg-4 field">
-                <input type="text" name="name" placeholder="* Введите ваше имя" required />
-            </div>
-            <div class="col-lg-4 field">
-                <input type="text" name="subject" placeholder="* Введите тему сообщения" required />
-            </div>
-            <div class="col-lg-12 margintop10 field">
-                <textarea rows="12" name="message" class="input-block-level" placeholder="* Ваше сообщение..." required></textarea>
-                <p>
-                    <button class="btn btn-theme margintop10 pull-left" type="submit">Отправить</button>
-                    <span class="pull-right margintop20">* Заполните, пожалуйста, все обязательные поля!</span>
-                </p>
-            </div>
-        </div>
-    </form>
+    <img src="https://static-maps.yandex.ru/1.x/?lang=en_US&l=map&pl=27.135483,38.422478,27.137685,38.422469,27.137736,38.422564,27.137789,38.424045,27.138519,38.423975,27.141899,38.423802,27.142215,38.423756,27.142333,38.423697,27.142376,38.423549,27.142596,38.423368,27.142971,38.423347,27.143285,38.423625,27.143245,38.423912,27.143015,38.424102,27.142795,38.424128,27.142795,38.424128,27.142387,38.423918,27.141909,38.423918,27.138275,38.42422" alt="">
     </body>
 </html>
-
-<script>
-    $(document).ready(function () {
-    $('#contactform').on('submit', function (e) {
-        e.preventDefault();
-         
-        $.ajax({
-            type: 'POST',
-            url: '/create-lesson',
-            data: $('#contactform').serialize(),
-            success: function (data) {
-                if (data.result) {
-                    $('#senderror').hide();
-                    $('#sendmessage').show();
-                    console.log(data.result);
-                } else {
-                    $('#senderror').show();
-                    $('#sendmessage').hide();
-                }
-            },
-            error: function () {
-                $('#senderror').show();
-                $('#sendmessage').hide();
-            }
-        });
-    });
-});
-</script>
