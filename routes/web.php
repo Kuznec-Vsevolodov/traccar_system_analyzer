@@ -19,6 +19,7 @@ Route::get('/get-max-speed-by-lesson/{lesson_id}', 'TraccarController@getMaxSpee
 Route::get('/get-accelerations/{lesson_id}', 'TraccarController@getRapidAccelerations');
 Route::get('/get-brakes/{lesson_id}', 'TraccarController@getHarchBrakes');
 Route::get('/get-full-distanse/{lesson_id}', 'TraccarController@getFullDistance');
+Route::get('/get-full-distanse-by-student/{student_id}', 'TraccarController@getFullDistanceByStudent');
 Route::get('/get-wide-turns/{lesson_id}', 'TraccarController@getWideTurns');
 Route::get('/notes/{id}', 'CommentsController@getAllCommentsByLesson');
 Route::get('/get-requests/{lesson_id}', 'RequestsController@index');

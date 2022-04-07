@@ -241,6 +241,21 @@ class TraccarController extends Controller
         return round($total_distance, 2);
     }
 
+    public function getFullDistanceByStudent($student_id){
+        $lessons = Lessons::where('student_id', $student_id)->get();
+        $attributes = [];
+        foreach($lessons as $lesson){
+            $attributes+=TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->pluck('attributes');
+        }
+        $total_distance = 0;
+        foreach($attributes as $item){
+            $item = collect(json_decode($item));
+            $total_distance += $item['distance'];
+        }
+        
+        return round($total_distance, 2);
+    }
+
     public function getLessonPositions($lesson_id){
         $lesson = Lessons::where('id', $lesson_id)->first();
         return TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get();

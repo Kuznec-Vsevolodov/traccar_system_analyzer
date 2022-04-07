@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Lessons;
 use App\Models\TcDevices;
 use Carbon\Carbon;
+use App\Models\TcPositions;
 
 class LessonController extends Controller
 {
