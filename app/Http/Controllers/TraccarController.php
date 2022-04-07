@@ -242,7 +242,7 @@ class TraccarController extends Controller
     }
 
     public function getFullDistanceByStudent($student_id){
-        $lessons = Lessons::where('student_id', $student_id)->get();
+        $lessons = Lessons::where('lesson_student', $student_id)->get();
         $attributes = [];
         foreach($lessons as $lesson){
             $attributes+=TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->pluck('attributes');
