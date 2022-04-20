@@ -6,14 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Students;
 use App\Models\TcPositions;
-use App\Models\Lessons;
+use App\Models\TripMaster;
 
 class RequestsController extends Controller
 {
 
     public function index($lesson_id){
 
-        $lesson = Lessons::where('database_trip_id', $lesson_id)->first();
+        $lesson = TripMaster::where('id', $lesson_id)->first();
         $positions = TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get(['longitude', 'latitude']);;
         $total_quantity = (count($positions)-count($positions)%100)/100;
         $final_array = [];
