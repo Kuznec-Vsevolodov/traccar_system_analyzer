@@ -16,7 +16,7 @@ class CommentsController extends Controller
 
         $instructor_id = Drivers::where('last_name', $request->input('last_name'))->where('first_name', $request->input('first_name'))->pluck('id');
 
-        $lesson = Lessons::where('id', $request->input('lesson_id'))->first();
+        $lesson = Lessons::where('database_trip_id', $request->input('lesson_id'))->first();
 
         $current_position = TcPositions::where('deviceid', $lesson->device_id)->orderBy('devicetime', 'DESC')->first();
 

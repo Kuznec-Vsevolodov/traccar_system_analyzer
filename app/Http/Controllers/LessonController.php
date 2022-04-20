@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Lessons;
 use App\Models\TcDevices;
 use Carbon\Carbon;
-use App\Models\TcPositions;
 
 class LessonController extends Controller
 {
@@ -21,12 +20,13 @@ class LessonController extends Controller
             'lesson_end' => $request->input('lesson_end'),
             'lesson_student' => $request->input('lesson_student'),
             'lesson_driver' => $request->input('lesson_driver'),
+            'database_trip_id' => $request->input('database_trip_id')
         ]);
         return $lesson;
     }
 
     public function getLessonData($id){
-        return Lessons::where('id', $id)->first();
+        return Lessons::where('database_trip_id', $id)->first();
     }
 
     public function getLessonByTime(Request $request){ 

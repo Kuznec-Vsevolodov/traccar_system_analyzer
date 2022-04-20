@@ -45,7 +45,7 @@ class TraccarController extends Controller
     }
 
     public function getCurrentPositionByLesson($id){
-        $lesson = Lessons::where('id', $id)->first();
+        $lesson = Lessons::where('database_trip_id', $id)->first();
 
         $device_last_position = TcPositions::where('deviceid', $id)->first();
         $device_attributes = collect($device_last_position->attributes);
@@ -91,7 +91,7 @@ class TraccarController extends Controller
     }
 
     public function getMaxSpeedByLesson($lesson_id){
-        $lesson = Lessons::where('id', $lesson_id)->first();
+        $lesson = Lessons::where('database_trip_id', $lesson_id)->first();
         $max_speed = TcPositions::where('deviceid', $lesson->device_id)
                                      ->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])
                                      ->orderBy('speed', 'DESC')->first();
@@ -104,7 +104,7 @@ class TraccarController extends Controller
     }
 
     public function getHarchBrakes($lesson_id){
-        $lesson = Lessons::where('id', $lesson_id)->first();
+        $lesson = Lessons::where('database_trip_id', $lesson_id)->first();
         $positions = TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get();
         $previous_item = null;
         $brakes_counter = 0;
@@ -148,7 +148,7 @@ class TraccarController extends Controller
     }
 
     public function getRapidAccelerations($lesson_id){
-        $lesson = Lessons::where('id', $lesson_id)->first();
+        $lesson = Lessons::where('database_trip_id', $lesson_id)->first();
         $positions = TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get();
         $previous_item = null;
         $accelerations_counter = 0;
@@ -161,7 +161,7 @@ class TraccarController extends Controller
                 if ($item->speed > $last_speed_data){
                     $speeds_differnce = round($item->speed*1.852, 2) - $last_speed_data; 
                     if($speeds_differnce >= 9){
-                        if (Accelerations::where('lesson_id', $id)->where('longitude', $item->longitude)->where('latitude', $item->latitude)->count() == 0){
+                        if (Accelerations::where('lesson_id', $lesson->id)->where('longitude', $item->longitude)->where('latitude', $item->latitude)->count() == 0){
                             Accelerations::create([
                                 'lesson_id' => $lesson->id,
                                 'longitude' => $item->longitude,
@@ -182,7 +182,7 @@ class TraccarController extends Controller
     }
 
     public function getWideTurns($lesson_id){
-        $lesson = Lessons::where('id', $lesson_id)->first();
+        $lesson = Lessons::where('database_trip_id', $lesson_id)->first();
         $positions = TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get();
         $previous_item = null;
         $wide_turns_counter = 0;
@@ -230,7 +230,7 @@ class TraccarController extends Controller
     }
 
     public function getFullDistance($lesson_id){
-        $lesson = Lessons::where('id', $lesson_id)->first();
+        $lesson = Lessons::where('database_trip_id', $lesson_id)->first();
         $attributes = TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->pluck('attributes');
         $total_distance = 0;
         foreach($attributes as $item){
@@ -259,8 +259,8 @@ class TraccarController extends Controller
     }
 
     public function getLessonPositions($lesson_id){
-        $lesson = Lessons::where('id', $lesson_id)->first();
-        return TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get();
+        $lesson = Lessons::where('database_trip_id', $lesson_id)->first();
+        return TcPositions::where('deviceid', $lesson->device_id)->whereBetween('devicetime', [$lesson->lesson_start, $lesson->lesson_end])->get(['latitude', 'longitude']);
     }
 
     public function getAllDevices(){
